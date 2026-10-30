@@ -8,7 +8,7 @@ import {
   HorizontalOrigin,
   DistanceDisplayCondition,
   Math as CesiumMath,
-  OpenStreetMapImageryProvider,
+  UrlTemplateImageryProvider,
   ScreenSpaceEventType
 } from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
@@ -44,14 +44,22 @@ const viewer = new Viewer("globe", {
   fullscreenButton: false,
   vrButton: false,
   shouldAnimate: true,
-  imageryProvider: new OpenStreetMapImageryProvider({
-    url: "https://tile.openstreetmap.org/"
+  imageryProvider: new UrlTemplateImageryProvider({
+    url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    credit: "Esri, Maxar, Earthstar Geographics"
   })
 });
 
+// Add geographic labels and boundaries above the satellite imagery.
+viewer.imageryLayers.addImageryProvider(new UrlTemplateImageryProvider({
+  url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+  credit: "Esri"
+}));
+
 const scene = viewer.scene;
 scene.backgroundColor = Color.fromCssColorString("#080d14");
-scene.globe.baseColor = Color.fromCssColorString("#101c28");
+scene.globe.baseColor = Color.fromCssColorString("#18232b");
+scene.globe.show = true;
 scene.globe.enableLighting = true;
 scene.globe.showGroundAtmosphere = true;
 scene.skyAtmosphere.show = true;
