@@ -8,7 +8,8 @@ import {
   HorizontalOrigin,
   DistanceDisplayCondition,
   Math as CesiumMath,
-  OpenStreetMapImageryProvider
+  OpenStreetMapImageryProvider,
+  ScreenSpaceEventType
 } from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import "./style.css";
@@ -203,8 +204,8 @@ viewer.clock.onTick.addEventListener(() => {
   lastTime = now;
   viewer.camera.rotate(Cartesian3.UNIT_Z, -delta * 0.012);
 });
-viewer.screenSpaceEventHandler.setInputAction(() => { rotation = false; }, 0);
-viewer.screenSpaceEventHandler.setInputAction(() => { rotation = true; lastTime = performance.now(); }, 2);
+viewer.screenSpaceEventHandler.setInputAction(() => { rotation = false; }, ScreenSpaceEventType.LEFT_DOWN);
+viewer.screenSpaceEventHandler.setInputAction(() => { rotation = true; lastTime = performance.now(); }, ScreenSpaceEventType.LEFT_UP);
 
 viewer.scene.postRender.addEventListener(() => {
   // Keep the render loop alive for CallbackProperty-based dispatch particles.
