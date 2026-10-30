@@ -4,7 +4,10 @@
 
 ## 当前效果
 
-- 全球三维地球与基础地图影像
+- Esri 全球卫星影像底图与地名/国界标注
+- Esri World Hillshade 山体阴影叠加
+- ArcGIS WorldElevation3D 真实高程地形（服务不可用时自动回退椭球）
+- 沿椭球测地线插值的跨洲调度航线
 - 8 个全球算力节点，区分在线 / 高负载 / 空闲状态
 - 节点名称、GPU 数量与状态信息
 - 跨区域调度弧线与沿线路径移动的光点
@@ -31,15 +34,16 @@ npm run preview
 
 ## 离线部署说明
 
-当前 Demo 的地图影像使用 OpenStreetMap 公共瓦片，字体使用 Google Fonts，因此**当前版本不是完全离线版**。Cesium 的 Workers、Assets、Widgets 已通过 Vite 复制到构建产物的 `/cesium/` 路径。
+当前 Demo 使用 Esri 全球卫星影像、地名/国界、山体阴影和 ArcGIS WorldElevation3D 高程服务，并使用 Google Fonts，因此**当前版本不是完全离线版**。Cesium 的 Workers、Assets、Widgets 已通过 Vite 复制到构建产物的 `/cesium/` 路径。
 
 要在内网完全离线运行：
 
-1. 将地图影像准备为本地 XYZ 或 WMTS 瓦片服务。
-2. 将 `src/main.js` 中的 OpenStreetMapImageryProvider URL 改为内网瓦片地址。
-3. 将 CSS 的在线字体替换为随项目部署的本地字体，或使用系统字体。
-4. 将本项目构建产物和瓦片服务部署到内网 Web 服务器。
-5. 断网验证浏览器 Network 面板无公网请求。
+1. 将卫星影像、地名/国界、山体阴影准备为本地 XYZ 或 WMTS 瓦片服务，并确认影像数据授权允许内网部署。
+2. 将高程数据准备为 Cesium Terrain 或兼容地形服务。
+3. 将 `src/main.js` 中的 Esri `UrlTemplateImageryProvider` 地址改为内网瓦片地址，并将 ArcGIS 高程服务替换为内网地形服务。
+4. 将 CSS 的在线字体替换为随项目部署的本地字体，或使用系统字体。
+5. 将本项目构建产物、影像和地形服务部署到内网 Web 服务器。
+6. 断网验证浏览器 Network 面板无公网请求。
 
 ## 接入真实调度数据
 
