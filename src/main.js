@@ -1,5 +1,9 @@
 import {
   Viewer,
+  ArcGISTiledElevationTerrainProvider,
+  EllipsoidGeodesic,
+  Cartographic,
+  ArcType,
   Cartesian3,
   Color,
   CallbackProperty,
@@ -50,23 +54,46 @@ const viewer = new Viewer("globe", {
   })
 });
 
-// Add geographic labels and boundaries above the satellite imagery.
-viewer.imageryLayers.addImageryProvider(new UrlTemplateImageryProvider({
+// Subtle relief shading gives mountains and coastlines more depth.
+const hillshadeLayer = viewer.imageryLayers.addImageryProvider(new UrlTemplateImageryProvider({
+  url: "https://services.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}",
+  credit: "Esri World Hillshade"
+}));
+hillshadeLayer.alpha = 0.18;
+
+// Geographic names and borders sit above the satellite image.
+const labelsLayer = viewer.imageryLayers.addImageryProvider(new UrlTemplateImageryProvider({
   url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
   credit: "Esri"
 }));
+labelsLayer.alpha = 0.82;
 
 const scene = viewer.scene;
 scene.backgroundColor = Color.fromCssColorString("#080d14");
 scene.globe.baseColor = Color.fromCssColorString("#18232b");
 scene.globe.show = true;
 scene.globe.enableLighting = true;
+scene.globe.depthTestAgainstTerrain = true;
+scene.globe.terrainExaggeration = 1.12;
 scene.globe.showGroundAtmosphere = true;
 scene.skyAtmosphere.show = true;
 scene.fog.enabled = true;
 scene.fog.density = 0.00012;
 scene.screenSpaceCameraController.minimumZoomDistance = 650000;
 scene.screenSpaceCameraController.maximumZoomDistance = 26000000;
+// Real elevation mesh: mountain ranges and ocean-floor relief are geometry,
+ // not a flat image overlay. If the public service is unavailable, keep the
+ // satellite globe working and report the terrain fallback in the console.
+ArcGISTiledElevationTerrainProvider.fromUrl(
+  "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"
+).then((terrainProvider) => {
+  viewer.terrainProvider = terrainProvider;
+  scene.globe.terrainExaggeration = 1.12;
+  console.info("Global elevation terrain loaded");
+}).catch((error) => {
+  console.warn("Elevation terrain unavailable; using ellipsoid globe.", error);
+});
+
 viewer.cesiumWidget.creditContainer.style.display = "none";
 
 viewer.camera.setView({
@@ -120,17 +147,19 @@ nodes.forEach((node) => {
 });
 
 function arcPositions(from, to, height = 1100000) {
-  const start = Cartesian3.fromDegrees(from.lon, from.lat);
-  const end = Cartesian3.fromDegrees(to.lon, to.lat);
-  const distance = Cartesian3.distance(start, end);
-  const steps = Math.max(48, Math.min(100, Math.round(distance / 150000)));
+  // Interpolate along the ellipsoid geodesic, so long routes follow the
+  // curvature of the Earth and dateline-crossing routes take the short path.
+  const start = Cartographic.fromDegrees(from.lon, from.lat);
+  const end = Cartographic.fromDegrees(to.lon, to.lat);
+  const geodesic = new EllipsoidGeodesic(start, end);
+  const surfaceDistance = geodesic.surfaceDistance;
+  const steps = Math.max(64, Math.min(180, Math.round(surfaceDistance / 90000)));
   const positions = [];
   for (let i = 0; i <= steps; i++) {
     const t = i / steps;
-    const lon = from.lon + (to.lon - from.lon) * t;
-    const lat = from.lat + (to.lat - from.lat) * t;
-    const lift = Math.sin(Math.PI * t) * height;
-    positions.push(Cartesian3.fromDegrees(lon, lat, lift));
+    const point = geodesic.interpolateUsingFraction(t);
+    const altitude = Math.sin(Math.PI * t) * height;
+    positions.push(Cartesian3.fromRadians(point.longitude, point.latitude, altitude));
   }
   return positions;
 }
@@ -147,7 +176,7 @@ activeRoutes.forEach(([from, to], index) => {
     polyline: {
       positions,
       width: 2.2,
-      arcType: 0,
+      arcType: ArcType.NONE,
       material: new PolylineGlowMaterialProperty({
         glowPower: 0.18,
         taperPower: 0.72,
