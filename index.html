@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080d14" />
+    <title>Compute Atlas · Global Dispatch</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="globe"></div>
+      <div class="vignette"></div>
+      <header class="topbar">
+        <a class="brand" href="#">
+          <span class="brand-mark"><i></i><i></i><i></i></span>
+          <span><strong>COMPUTE ATLAS</strong><small>GLOBAL RESOURCE NETWORK</small></span>
+        </a>
+        <div class="top-status"><span class="pulse"></span> GLOBAL NETWORK <b>OPERATIONAL</b></div>
+        <div class="clock" id="clock">--:--:-- UTC</div>
+      </header>
+      <section class="hero">
+        <div class="eyebrow">INTELLIGENT COMPUTE SCHEDULING</div>
+        <h1>全球算力调度网络</h1>
+        <p>连接分布式算力节点 · 让每一份算力自由流动</p>
+      </section>
+      <aside class="left-panel">
+        <div class="panel-heading"><span>NETWORK OVERVIEW</span><span class="live-tag">LIVE</span></div>
+        <div class="metric-grid">
+          <div class="metric"><small>在线节点</small><strong id="onlineNodes">08</strong><em>个资源中心</em></div>
+          <div class="metric"><small>GPU 总规模</small><strong>2,480</strong><em>张加速卡</em></div>
+          <div class="metric"><small>运行任务</small><strong id="activeJobs">126</strong><em>个调度任务</em></div>
+          <div class="metric"><small>资源利用率</small><strong>78.6<span>%</span></strong><em>全局平均</em></div>
+        </div>
+        <div class="panel-divider"></div>
+        <div class="panel-heading"><span>REGIONAL CAPACITY</span><span class="muted">GPU NODES</span></div>
+        <div class="region-row"><span><i class="region-dot asia"></i>亚太地区</span><b>1,120</b><div class="bar"><i style="width:82%"></i></div></div>
+        <div class="region-row"><span><i class="region-dot europe"></i>欧洲地区</span><b>760</b><div class="bar"><i style="width:61%"></i></div></div>
+        <div class="region-row"><span><i class="region-dot america"></i>美洲地区</span><b>600</b><div class="bar"><i style="width:48%"></i></div></div>
+        <div class="panel-divider"></div>
+        <div class="panel-heading"><span>NETWORK LATENCY</span><span class="muted">AVG. RTT</span></div>
+        <div class="latency"><strong>42.8</strong><span>ms</span><small>跨区域网络平均延迟</small></div>
+      </aside>
+      <aside class="right-panel">
+        <div class="panel-heading"><span>DISPATCH STREAM</span><span class="live-tag">LIVE FEED</span></div>
+        <div class="dispatch-summary"><strong id="dispatchCount">03</strong><span>ACTIVE DISPATCHES</span></div>
+        <div id="dispatchList" class="dispatch-list"></div>
+        <div class="panel-divider"></div>
+        <div class="panel-heading"><span>NODE STATUS</span><span class="muted">GLOBAL</span></div>
+        <div class="status-line"><span><i class="status-dot online"></i>在线</span><b>08</b></div>
+        <div class="status-line"><span><i class="status-dot busy"></i>高负载</span><b>02</b></div>
+        <div class="status-line"><span><i class="status-dot idle"></i>空闲</span><b>03</b></div>
+      </aside>
+      <footer class="bottom-bar">
+        <div><span class="coord-label">VIEW</span><b>GLOBAL / 3D</b></div>
+        <div><span class="coord-label">COORDINATE SYSTEM</span><b>WGS 84</b></div>
+        <div class="bottom-center"><span class="pulse"></span> SIMULATED NETWORK DATA</div>
+        <div class="hint">拖动旋转 · 滚轮缩放 · 右键倾斜</div>
+      </footer>
+      <div class="map-caption">EARTH · REAL-TIME COMPUTE TOPOLOGY <span>●</span></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
